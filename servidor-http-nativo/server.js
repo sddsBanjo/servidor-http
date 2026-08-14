@@ -1,23 +1,44 @@
 import http from 'node:http';
+import { URL } from 'node:url';
 
 const porta = 3000;
 
 const server = http.createServer();
 
-server.on('request', (req, res) => {
-    console.log(`Requisição recebida! ${req.method} ${req.url}`);
-    console.log(new Date().toISOString());
+const requisicao = (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200;
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    
+    if (req.method === 'GET' && urlObj.pathname === '/') {
+        return res.end(JSON.stringify({ "data": "Esta é a página inicial." }));
+    }
+    
+    else if (req.method === 'GET' && urlObj.pathname === '/saudacao') {
+        const nome = urlObj.searchParams.get('nome');
+        return res.end(JSON.stringify({ "nome": nome }));
+    }
+    
+    else if (req.method === 'GET' && urlObj.pathname === '/contato') {
+        return res.end(JSON.stringify(
+            {
+                "data": [
+                    {
+                        "telefone": "67 99999-9999",
+                        "e-mail": "email@gmail.com"
+                    }
+                ]
+            }
+        ));
+    }
 
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ status: "ok" }));
-    /*
-    Não vou remover o res.end pra não comprometer o funcionamento do código, mas resumindo:
-    Sem o res.end, o navegador fica carregando eternamente. A conexão fica pendente, onde o
-    cliente fica esperando indefinidamente por uma resposta que o servidor nunca entrega.
-    Depois de certo tempo, o navegador dá timeout e desiste.
-    */
-});
+    return res.end(JSON.stringify({ "chave": "valor" }));
+
+    console.log(`Requisição recebida! ${req.method} ${req.url}`);
+    res.end();
+}
+
+server.on('request', requisicao);
 
 server.listen(porta, () => {
     console.log(`Servidor ouvindo na porta ${porta}`);
