@@ -7,9 +7,9 @@ const server = http.createServer();
 server.on('request', (req, res) => {
     console.log(`Requisição recebida! ${req.method} ${req.url}`);
 
-    res.statusCode = 200;
+    res.statusCode = 201;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end("Servidor funcionando!");
+    res.end("Recurso criado");
 });
 
 server.listen(porta, () => {
