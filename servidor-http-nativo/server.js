@@ -1,4 +1,4 @@
-const http = require('node:http');
+import http from 'node:http';
 
 const porta = 3000;
 
